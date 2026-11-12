@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enox Pay – Automated Mobile Banking SMS &amp; Notification Payment Gateway</title>
+<meta name="description" content="Turn bKash, Nagad, Rocket and Upay SMS and notification alerts into HMAC-signed real-time webhooks. Free signed Android APK, no third-party gateway fees.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Enox Pay – Automated Mobile Banking SMS &amp; Notification Payment Gateway">
+<meta property="og:description" content="Signed real-time webhooks from Android MFS alerts. bKash, Nagad, Rocket, Upay and custom regex.">
+<meta property="og:image" content="https://i.ibb.co.com/zHrzF07M/enoxpaylogo.png">
+<meta name="theme-color" content="#111318">
+<link rel="icon" type="image/png" href="https://i.ibb.co.com/zHrzF07M/enoxpaylogo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Material 3 dark scheme, seed: cobalt */
+:root{
+--surface:#111318;--sc-low:#191B20;--sc:#1D2024;--sc-high:#282A2F;--sc-hst:#33353A;
+--on-surface:#E2E2E9;--on-var:#C4C6D0;--outline:#8E9099;--outline-var:#44474F;
+--primary:#B6C4FF;--on-primary:#052C8C;--pc:#2A4BD0;--on-pc:#DDE1FF;
+--sec-c:#3F4759;--on-sec-c:#DBE2F9;
+--ok:#7DDBA9;--ok-c:#00513A;--on-ok-c:#98F7C4;
+--font:'Roboto Flex','Roboto',system-ui,-apple-system,'Segoe UI',sans-serif;--mono:'Roboto Mono',ui-monospace,Menlo,Consolas,monospace;
+--ease:cubic-bezier(.2,0,0,1)}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{background:var(--surface);color:var(--on-surface);font:400 16px/1.625 var(--font);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+img{max-width:100%}
+:focus-visible{outline:3px solid var(--primary);outline-offset:2px;border-radius:12px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+section{padding:88px 0}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;line-height:1.15}
+h1{font-size:clamp(2.4rem,5.4vw,3.9rem);font-weight:700;letter-spacing:-.035em}
+h2{font-size:clamp(1.8rem,3.4vw,2.5rem)}
+h3{font-size:1.25rem;letter-spacing:-.01em}
+.lead{color:var(--on-var);font-size:1.0625rem;max-width:58ch}
+.mono{font-family:var(--mono)}
+.ico-svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* top app bar */
+header.bar{position:sticky;top:0;z-index:50;background:rgba(17,19,24,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.nav{display:flex;align-items:center;gap:16px;height:72px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:1.2rem;letter-spacing:-.01em}
+.logo{width:40px;height:40px;border-radius:12px;background:var(--sc);object-fit:cover;display:block;flex:none}
+.badge{font:500 .75rem var(--mono);color:var(--on-sec-c);background:var(--sec-c);border-radius:8px;padding:2px 8px}
+.links{display:flex;gap:4px;margin:0 auto}
+.links a{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:20px;color:var(--on-var);font-weight:500;font-size:.9375rem;transition:background .2s}
+.links a:hover{background:rgba(226,226,233,.08);color:var(--on-surface)}
+.acts{display:flex;align-items:center;gap:8px}
+.ib{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--on-var);background:none;border:0;cursor:pointer;transition:background .2s}
+.ib:hover{background:rgba(226,226,233,.08);color:var(--on-surface)}
+/* buttons (M3: full-round) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 28px;border-radius:24px;border:0;font:600 .9375rem var(--font);letter-spacing:.01em;cursor:pointer;transition:box-shadow .2s var(--ease),filter .2s;position:relative}
+.btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn.fill{background:var(--primary);color:var(--on-primary)}
+.btn.fill:hover{filter:brightness(1.08);box-shadow:0 2px 10px rgba(0,0,0,.45)}
+.btn.tonal{background:var(--sec-c);color:var(--on-sec-c)}
+.btn.tonal:hover{filter:brightness(1.12)}
+.btn.out{background:none;color:var(--primary);box-shadow:inset 0 0 0 1px var(--outline)}
+.btn.out:hover{background:rgba(182,196,255,.08)}
+.btn.sm{height:40px;padding:0 20px}
+.btn.fill:hover .dl{animation:dl .7s ease infinite}
+@keyframes dl{50%{transform:translateY(3px)}}
+.burger{display:none}
+.drawer{display:none;padding:8px 16px 20px;background:var(--sc-low);border-radius:0 0 28px 28px}
+.drawer.open{display:block}
+.drawer a{display:flex;align-items:center;height:56px;padding:0 20px;border-radius:28px;color:var(--on-var);font-weight:500}
+.drawer a:hover{background:var(--sc-high)}
+/* hero */
+.hero{padding:56px 0 88px}
+.hgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.status{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px 0 10px;border-radius:8px;background:var(--ok-c);color:var(--on-ok-c);font-size:.8125rem;font-weight:500;margin-bottom:24px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.hero .lead{margin:24px 0 36px;font-size:1.125rem}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.hint{margin-top:28px;color:var(--on-var);font-size:.875rem;display:flex;flex-wrap:wrap;gap:6px 20px}
+.hint span{display:inline-flex;align-items:center;gap:6px}
+.hint svg{width:18px;height:18px;color:var(--ok)}
+.stage{position:relative;display:grid;place-items:center;padding:32px 0;border-radius:48px;background:linear-gradient(160deg,var(--sc-high),var(--sc-low))}
+.phone{width:min(78%,290px);padding:9px;border-radius:42px;background:#0b0c10;box-shadow:0 0 0 1.5px #3a3d45,0 30px 60px -15px rgba(0,0,0,.7);position:relative;transition:transform .5s var(--ease)}
+.phone:before{content:"";position:absolute;right:-3.5px;top:112px;width:3px;height:64px;border-radius:2px;background:#3a3d45}
+.screen{position:relative;border-radius:34px;overflow:hidden;background:#000}
+.screen img{display:block;width:100%;height:auto}
+.cam{position:absolute;top:11px;left:50%;width:11px;height:11px;margin-left:-5.5px;border-radius:50%;background:#050608;box-shadow:0 0 0 2px #15171c;z-index:2}
+.chip-f{position:absolute;display:flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:12px;font:500 .8rem var(--font);box-shadow:0 4px 16px rgba(0,0,0,.4);white-space:nowrap}
+.cf1{right:14px;top:18%;background:var(--ok-c);color:var(--on-ok-c)}
+.cf2{left:14px;bottom:16%;background:var(--sc-hst);color:var(--on-surface)}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.stage:hover .phone{transform:translateY(-6px)}}
+/* platforms */
+.plat{padding:0}
+.plat .in{background:var(--sc-low);border-radius:28px;padding:24px 32px;display:flex;flex-wrap:wrap;gap:16px 40px;align-items:center;justify-content:space-between}
+.mfs{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;height:36px;padding:0 16px;border-radius:8px;background:var(--sc-high);color:var(--on-surface);font-weight:500;font-size:.875rem}
+.chip.m{font-family:var(--mono);font-size:.8125rem;background:none;color:var(--on-var);box-shadow:inset 0 0 0 1px var(--outline-var)}
+.rowc{display:flex;flex-wrap:wrap;gap:8px}
+/* features */
+.head{margin-bottom:40px;display:grid;gap:12px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--sc);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:12px;transition:background .25s}
+.card:hover{background:var(--sc-high)}
+.card p{color:var(--on-var);font-size:.9375rem}
+.ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;background:var(--sec-c);color:var(--on-sec-c);margin-bottom:8px}
+.card:nth-child(2) .ic{background:var(--pc);color:var(--on-pc)}
+.card:nth-child(6) .ic{background:var(--ok-c);color:var(--on-ok-c)}
+.vars{font:400 .8rem/1.7 var(--mono);color:var(--on-var);margin-top:4px}
+/* dev */
+.dev{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
+.hdrs{display:grid;gap:8px;margin:28px 0}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--sc);border-radius:16px;padding:12px 12px 12px 20px}
+.hdr b{display:block;font:500 .85rem var(--mono);overflow-wrap:anywhere}
+.hdr span{font-size:.8125rem;color:var(--on-var)}
+.cp{flex:none;height:40px;min-width:72px;padding:0 16px;border-radius:20px;border:0;background:var(--sec-c);color:var(--on-sec-c);font:600 .8125rem var(--font);cursor:pointer;transition:filter .2s}
+.cp:hover{filter:brightness(1.15)}
+.cp.done{background:var(--ok-c);color:var(--on-ok-c)}
+.code{background:var(--sc-low);border-radius:28px;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--outline-var);overflow-x:auto;padding:0 8px}
+.tab{height:52px;padding:0 20px;border:0;background:none;color:var(--on-var);font:500 .9rem var(--font);cursor:pointer;position:relative;white-space:nowrap}
+.tab:hover{color:var(--on-surface)}
+.tab[aria-selected=true]{color:var(--primary)}
+.tab[aria-selected=true]:after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--primary)}
+pre{padding:24px;overflow-x:auto;font:400 .84rem/1.75 var(--mono);color:#D0D3DE;tab-size:2}
+.k{color:#B6C4FF}.s{color:#98F7C4}.n{color:#FFB77C}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{background:var(--sc);border-radius:28px;padding:28px;display:grid;gap:12px;align-content:start}
+.step .no{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:var(--on-primary);font-weight:700}
+.step p{color:var(--on-var);font-size:.9375rem}
+/* verify */
+.vbox{background:var(--sc);border-radius:36px;padding:40px;display:flex;justify-content:center}
+.meta{display:grid;gap:4px;align-content:start}
+.meta h2{font-size:1.75rem;margin-bottom:12px}
+.meta div{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--outline-var);font-size:.9375rem;color:var(--on-var)}
+.meta b{color:var(--on-surface);font:500 .875rem var(--mono);text-align:right;overflow-wrap:anywhere}
+.meta .status{margin:16px 0 0;justify-self:start}
+.fields{display:grid;gap:20px;align-content:start}
+.field{position:relative}
+.field label{position:absolute;top:-9px;left:14px;background:var(--sc);padding:0 6px;font-size:.75rem;color:var(--primary);font-weight:500}
+.field div{display:flex;align-items:center;gap:8px;border-radius:12px;box-shadow:inset 0 0 0 1px var(--outline);padding:10px 10px 10px 16px}
+.field code{flex:1;min-width:0;font:400 .8rem/1.55 var(--mono);word-break:break-all;color:var(--on-surface)}
+.vcta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+/* community */
+.comm{background:var(--pc);color:var(--on-pc);border-radius:36px;padding:56px 48px;display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between}
+.comm div{max-width:54ch;display:grid;gap:12px}
+.comm p{color:var(--on-pc);opacity:.85}
+.comm .btn.fill{background:#fff;color:#1b2f8f}
+footer{background:var(--sc-low);margin-top:24px;padding:40px 0}
+.foot{display:flex;flex-wrap:wrap;gap:20px 32px;justify-content:space-between;align-items:center}
+.foot nav{display:flex;flex-wrap:wrap;gap:0 4px}
+.foot nav a{display:inline-flex;align-items:center;height:44px;padding:0 14px;border-radius:22px;color:var(--on-var);font-size:.9rem;font-weight:500}
+.foot nav a:hover{background:var(--sc-high);color:var(--on-surface)}
+.cr{color:var(--outline);font-size:.875rem;font-weight:400}
+.rv{opacity:0;transform:translateY(12px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.btn.fill:hover .dl{animation:none}html{scroll-behavior:auto}.phone{transition:none}}
+@media(max-width:960px){
+section{padding:56px 0}
+.links,.hide-m{display:none}.burger{display:grid}
+.hgrid,.dev{grid-template-columns:1fr;gap:36px}
+.hero{padding:32px 0 56px}
+.grid,.steps{grid-template-columns:1fr 1fr}
+.vbox{padding:28px 24px}.comm{padding:36px 28px}
+}
+@media(max-width:600px){
+.grid,.steps{grid-template-columns:1fr}
+.badge{display:none}
+.cta .btn{width:100%}
+.plat .in{padding:20px}
+.stage{border-radius:36px}
+.cf1{right:8px}.cf2{left:8px}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="Enox Pay home"><img class="logo" src="https://i.ibb.co.com/zHrzF07M/enoxpaylogo.png" alt="Enox Pay logo" width="40" height="40" loading="eager"><span>Enox Pay</span><span class="badge" data-ver>v1.0.0</span></a>
+    <nav class="links" aria-label="Primary"><a href="#features">Features</a><a href="#webhook">Webhook API</a><a href="#security">Security</a><a href="#setup">Setup</a></nav>
+    <div class="acts">
+      <a class="ib hide-m" href="https://github.com/enoxbd/enoxpay" target="_blank" rel="noopener noreferrer" aria-label="Enox Pay on GitHub"><svg class="ico-svg" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.25 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg></a>
+      <a class="ib hide-m" href="https://t.me/enox_team" target="_blank" rel="noopener noreferrer" aria-label="Enox Team on Telegram"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M21 4 3 11l6 2 2 6 3-4 5 4z"/><path d="m9 13 8-6"/></svg></a>
+      <a class="btn fill sm" href="https://github.com/enoxbd/enoxpay/releases/download/v1.0.0/EnoxPay-v1.0.0-release.apk" download data-apk><svg class="dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download APK</a>
+      <button class="ib burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <div class="drawer" id="drawer"><a href="#features">Features</a><a href="#webhook">Webhook API</a><a href="#security">Security</a><a href="#setup">Setup</a><a href="https://github.com/enoxbd/enoxpay" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://t.me/enox_team" target="_blank" rel="noopener noreferrer">Telegram channel</a></div>
+</header>
+
+<main id="top">
+<div class="hero">
+  <div class="wrap hgrid">
+    <div>
+      <div class="status"><i></i>Android 7.0–16 • Signed Release <span data-ver>v1.0.0</span></div>
+      <h1>Turn Android MFS alerts into signed real-time webhooks.</h1>
+      <p class="lead">Enox Pay reads bKash, Nagad, Rocket and Upay SMS and notifications on your own phone, matches them with built-in or custom regex, and sends the payment to your server. No middleman servers.</p>
+      <div class="cta">
+        <a class="btn fill" href="https://github.com/enoxbd/enoxpay/releases/download/v1.0.0/EnoxPay-v1.0.0-release.apk" download data-apk><svg class="dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download APK Now (11 MB)</a>
+        <a class="btn tonal" href="https://t.me/enox_team" target="_blank" rel="noopener noreferrer">Telegram Channel</a>
+        <a class="btn out" href="https://github.com/enoxbd/enoxpay" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+      </div>
+      <div class="hint">
+        <span><svg class="ico-svg" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>No third-party gateway fees</span>
+        <span><svg class="ico-svg" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>HMAC-SHA256 signed</span>
+        <span><svg class="ico-svg" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>Zero source leaks (signed APK)</span>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="phone"><div class="screen"><span class="cam"></span><img src="https://i.ibb.co.com/hxGCQByx/Screenshot-2026-11-12-19-33-27-87-ea843dfd19f07f85e07282d78f01635f.jpg" alt="Enox Pay Android App Interface" width="1080" height="2400" loading="eager"></div></div>
+      <div class="chip-f cf1">200 OK • Webhook Delivered</div>
+      <div class="chip-f cf2">HMAC-SHA256 Verified</div>
+    </div>
+  </div>
+</div>
+
+<div class="plat"><div class="wrap"><div class="in">
+  <div class="mfs"><span class="chip">bKash</span><span class="chip">Nagad</span><span class="chip">Rocket</span><span class="chip">Upay</span><span class="chip">Custom Regex</span></div>
+  <div class="rowc"><span class="chip m">API 24–36</span><span class="chip m">HMAC-SHA256</span><span class="chip m">Dual-SIM slot aware</span><span class="chip m">WorkManager retry queue</span></div>
+</div></div></div>
+
+<section id="features"><div class="wrap">
+  <div class="head rv"><h2>Everything between the SMS and your server</h2><p class="lead">Six features that turn a payment alert on your phone into a verified order on your backend.</p></div>
+  <div class="grid">
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></div><h3>SMS and notification engine</h3><p>Captures MFS SMS and app notifications in real time, tracks the SIM slot, and lets you manage custom regex profiles.</p></article>
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M5 12h12m0 0-5-5m5 5-5 5M20 5v14"/></svg></div><h3>Signed webhook dispatcher</h3><p>Sends a JSON POST from your template, with Bearer, API-key or custom headers and an <span class="mono">X-Enox-Signature</span>.</p><div class="vars">{platform} {amount} {tx_id} {sender} {balance} {fee} {sim_slot} {source} {sms} {time}</div></article>
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7M21 4v5h-5"/></svg></div><h3>Reliable in the background</h3><p>Foreground service, battery optimization checks, auto-resume after boot, and automatic WorkManager retries.</p></article>
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M5 20V10m7 10V4m7 16v-7"/></svg></div><h3>Analytics, logs and CSV</h3><p>See volume breakdowns, filter by SUCCESS, PENDING or FAILED, search live, recover from trash, and export CSV in one tap.</p></article>
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 1 1 12 0v6l2 2H4zM10 21h4"/></svg></div><h3>Telegram bot alerts</h3><p>Get capture alerts, delivery confirmations and scheduled watchdog heartbeats in Telegram.</p></article>
+    <article class="card rv"><div class="ic"><svg class="ico-svg" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Privacy and security first</h3><p>Lock the app with biometrics or a PIN, keep encrypted local backups, and verify the V2-signed APK before installing.</p></article>
+  </div>
+</div></section>
+
+<section id="webhook" style="padding-top:0"><div class="wrap dev">
+  <div class="rv">
+    <h2>Verify every webhook in a few lines</h2>
+    <p class="lead" style="margin-top:16px">Each request carries an event name, a timestamp and a signature. Compute the HMAC of the timestamp and raw body with your webhook secret, then compare.</p>
+    <div class="hdrs">
+      <div class="hdr"><div><b>X-Enox-Event</b><span>Event type, such as payment.received</span></div><button class="cp" type="button" data-copy="X-Enox-Event">Copy</button></div>
+      <div class="hdr"><div><b>X-Enox-Timestamp</b><span>Unix time the request was signed</span></div><button class="cp" type="button" data-copy="X-Enox-Timestamp">Copy</button></div>
+      <div class="hdr"><div><b>X-Enox-Signature: sha256=…</b><span>hmac_sha256(secret, "$timestamp.$rawBody")</span></div><button class="cp" type="button" data-copy="X-Enox-Signature">Copy</button></div>
+    </div>
+    <a class="btn tonal" href="https://github.com/enoxbd/enoxpay/blob/main/docs/WEBHOOK_GUIDE.md" target="_blank" rel="noopener noreferrer">Read the webhook guide</a>
+  </div>
+  <div class="code rv">
+    <div class="tabs" role="tablist" aria-label="Code samples">
+      <button class="tab" role="tab" type="button" aria-selected="true" data-t="0">JSON Payload</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-t="1">Node.js</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-t="2">PHP</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-t="3">Python</button>
+    </div>
+    <pre><code id="code"></code></pre>
+  </div>
+</div></section>
+
+<section id="setup" style="padding-top:0"><div class="wrap">
+  <div class="head rv"><h2>Live in three steps</h2></div>
+  <div class="steps">
+    <div class="step rv"><span class="no">1</span><h3>Download and install</h3><p>Get <span class="mono">EnoxPay-v1.0.0-release.apk</span> and install it on a phone running Android 7.0 or later.</p></div>
+    <div class="step rv"><span class="no">2</span><h3>Grant permissions, add webhook</h3><p>Allow SMS and notification access, enter your endpoint URL and webhook secret, then send a test ping.</p></div>
+    <div class="step rv"><span class="no">3</span><h3>Turn the gateway on</h3><p>Switch Gateway on. Your server starts receiving signed webhooks and replies <span class="mono" style="color:var(--ok)">200 OK</span>.</p></div>
+  </div>
+</div></section>
+
+<section id="security" style="padding-top:0"><div class="wrap">
+  <div class="vbox rv">
+    <div class="vcta">
+      <a class="btn fill" href="https://github.com/enoxbd/enoxpay/releases/download/v1.0.0/EnoxPay-v1.0.0-release.apk" download data-apk><svg class="dl" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download EnoxPay v1.0.0 APK</a>
+      <a class="btn out" href="https://github.com/enoxbd/enoxpay/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer">Verify on GitHub Releases</a>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:0;padding-bottom:40px"><div class="wrap">
+  <div class="comm rv">
+    <div><h2>Join Enox Team on Telegram</h2><p>Get updates and announcements, grab regex templates, and ask the team for merchant support.</p></div>
+    <a class="btn fill" href="https://t.me/enox_team" target="_blank" rel="noopener noreferrer">Join the channel</a>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot">
+  <div class="brand"><img class="logo" src="https://i.ibb.co.com/zHrzF07M/enoxpaylogo.png" alt="Enox Pay logo" width="40" height="40" loading="lazy"><span>Enox Pay</span><span class="cr">© 2026</span></div>
+  <nav aria-label="Footer"><a href="https://github.com/enoxbd/enoxpay" target="_blank" rel="noopener noreferrer">GitHub Repository</a><a href="https://github.com/enoxbd/enoxpay/releases/tag/v1.0.0" target="_blank" rel="noopener noreferrer">Release v1.0.0</a><a href="https://github.com/enoxbd/enoxpay/blob/main/docs/WEBHOOK_GUIDE.md" target="_blank" rel="noopener noreferrer">Webhook Docs</a><a href="https://t.me/enox_team" target="_blank" rel="noopener noreferrer">Developer Telegram</a></nav>
+</div></footer>
+
+<script>
+(function(){
+fetch("https://api.github.com/repos/enoxbd/enoxpay/releases/latest",{headers:{Accept:"application/vnd.github+json"}}).then(function(r){return r.ok?r.json():Promise.reject()}).then(function(d){
+  var a=(d.assets||[]).filter(function(x){return /\.apk$/i.test(x.name)})[0];
+  if(!a||!a.browser_download_url)return;
+  document.querySelectorAll("[data-apk]").forEach(function(el){el.href=a.browser_download_url});
+  var v=d.tag_name||"";
+  if(v)document.querySelectorAll("[data-ver]").forEach(function(el){var t=el.textContent;el.textContent=/^\s*v/.test(t)||/Release/.test(t)?t.replace(/v\d+\.\d+\.\d+/,v):v.replace(/^v/,"")});
+}).catch(function(){});
+var b=document.querySelector(".burger"),dr=document.getElementById("drawer");
+b.addEventListener("click",function(){var o=dr.classList.toggle("open");b.setAttribute("aria-expanded",o)});
+dr.addEventListener("click",function(e){if(e.target.tagName==="A"){dr.classList.remove("open");b.setAttribute("aria-expanded","false")}});
+document.querySelectorAll(".cp").forEach(function(btn){var l=btn.textContent;btn.addEventListener("click",function(){
+  var t=btn.getAttribute("data-copy");
+  var ok=function(){btn.textContent="Copied ✓";btn.classList.add("done");setTimeout(function(){btn.textContent=l;btn.classList.remove("done")},1600)};
+  function fb(){var x=document.createElement("textarea");x.value=t;x.style.position="fixed";x.style.opacity="0";document.body.appendChild(x);x.select();try{document.execCommand("copy");ok()}catch(e){}document.body.removeChild(x)}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fb)}else fb();
+})});
+var E=function(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")};
+var S=[
+'{\n  "platform": "bKash",\n  "amount": 1250.00,\n  "tx_id": "BK8N4Q2L7X",\n  "sender": "01XXXXXXXXX",\n  "balance": 5430.50,\n  "fee": 0,\n  "sim_slot": 1,\n  "source": "sms",\n  "sms": "You have received Tk 1,250.00 ...",\n  "time": "2026-11-12T19:33:27+06:00"\n}',
+'const crypto = require("crypto");\n\napp.post("/enox", express.raw({ type: "*/*" }), (req, res) => {\n  const ts  = req.get("X-Enox-Timestamp");\n  const sig = req.get("X-Enox-Signature") || "";\n  const raw = req.body.toString("utf8");\n\n  const mac = "sha256=" + crypto.createHmac("sha256", process.env.ENOX_SECRET)\n    .update(`${ts}.${raw}`).digest("hex");\n\n  const ok = sig.length === mac.length &&\n    crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(mac));\n  if (!ok) return res.sendStatus(401);\n\n  const payment = JSON.parse(raw);\n  res.sendStatus(200);\n});',
+'<?php\n$raw = file_get_contents("php://input");\n$ts  = $_SERVER["HTTP_X_ENOX_TIMESTAMP"] ?? "";\n$sig = $_SERVER["HTTP_X_ENOX_SIGNATURE"] ?? "";\n\n$mac = "sha256=" . hash_hmac("sha256", "$ts.$raw", getenv("ENOX_SECRET"));\n\nif (!hash_equals($mac, $sig)) {\n  http_response_code(401);\n  exit;\n}\n\n$payment = json_decode($raw, true);\nhttp_response_code(200);',
+'import hmac, hashlib, os, json\n\n@app.post("/enox")\nasync def enox(request: Request):\n    raw = await request.body()\n    ts  = request.headers.get("X-Enox-Timestamp", "")\n    sig = request.headers.get("X-Enox-Signature", "")\n\n    mac = "sha256=" + hmac.new(\n        os.environ["ENOX_SECRET"].encode(),\n        f"{ts}.".encode() + raw,\n        hashlib.sha256,\n    ).hexdigest()\n\n    if not hmac.compare_digest(mac, sig):\n        raise HTTPException(status_code=401)\n\n    payment = json.loads(raw)\n    return {"ok": True}'
+];
+function hl(s){
+  return E(s).replace(/"([^"\n]*?)"(\s*:)?/g,function(m,t,c){return c?'<span class="k">"'+t+'"</span>'+c:'<span class="s">"'+t+'"</span>'})
+    .replace(/(`[^`]*`)/g,'<span class="s">$1</span>')
+    .replace(/\b(const|require|return|if|import|async|await|raise|def|exit)\b/g,'<span class="k">$1</span>')
+    .replace(/(\s)(\d+(?:\.\d+)?)(?=[,\n)])/g,'$1<span class="n">$2</span>');
+}
+var code=document.getElementById("code"),tabs=document.querySelectorAll(".tab");
+function show(i){tabs.forEach(function(t,j){t.setAttribute("aria-selected",i===j)});code.innerHTML=hl(S[i])}
+tabs.forEach(function(t,i){t.addEventListener("click",function(){show(i)})});
+show(0);
+var els=document.querySelectorAll(".rv");
+if("IntersectionObserver" in window&&!matchMedia("(prefers-reduced-motion:reduce)").matches){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.1});
+  els.forEach(function(el){io.observe(el)});
+}else els.forEach(function(el){el.classList.add("in")});
+})();
+</script>
+</body>
+</html>
